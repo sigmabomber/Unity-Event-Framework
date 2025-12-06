@@ -17,12 +17,13 @@ Think of it like a walkie-talkie:
 
 ### Without Network Events (Messy):
 
+```csharp
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
     public NetworkManager networkManager;
     public UIManager uiManager;
-```csharp
+
     void Shoot()
     {
         networkManager.SendShootCommand();
@@ -35,11 +36,11 @@ public class Player : MonoBehaviour
 
 **Problems**:
 
-Player must know every system affected
+### Player must know every system affected
 
-Hard to extend
+### Hard to extend
 
-Hard to debug and maintain
+### Hard to debug and maintain
 
 ```csharp
 // With Network Events (Clean):
@@ -62,10 +63,11 @@ public class Player : MonoBehaviour
 - Easy to add new systems (just listen)
 - Clean and decoupled
 
-How To Use The Network Event System
-Step 1: Define Your Event
+# How To Use The Network Event System
 
-## Create a simple class with the data you want to share:
+## Step 1: Define Your Event
+
+### Create a simple class with the data you want to share:
 
 ```csharp
 public class PlayerShotEvent
@@ -97,7 +99,8 @@ public class Player : MonoBehaviour
 ```
 ## Step 3: Listen For The Event
 
-Any system can listen. Just inherit from NetworkEventListener:
+##3 Any system can listen. Just inherit from NetworkEventListener:
+
 ```csharp
 public class NetworkGameManager : NetworkEventListener
 {
@@ -113,8 +116,10 @@ public class NetworkGameManager : NetworkEventListener
     }
 }
 ```
-Complete Example: Multiplayer Coin Collection
+
+### Complete Example: Multiplayer Coin Collection
 ## 1. Define the event:
+
 ```csharp
 public class CoinCollectedNetworkEvent
 {
@@ -123,6 +128,7 @@ public class CoinCollectedNetworkEvent
     public string PlayerID;
 }
 ```
+
 ## 2. Publish the event:
 
 ```csharp
@@ -146,7 +152,9 @@ public class Coin : MonoBehaviour
     }
 }
 ```
+
 ## 3. Systems listen independently:
+
 ```csharp
 // Update UI for the player
 public class UIManager : NetworkEventListener
@@ -192,13 +200,14 @@ public class ServerCoinManager : NetworkEventListener
 
 ## Notice:
 
-Coin doesn’t know about any system
+### Coin doesn’t know about any system
 
-Each system only reacts to the event
+### Each system only reacts to the event
 
-Adding or removing systems doesn’t require changing Coin.cs
+### Adding or removing systems doesn’t require changing Coin.cs
 
-Common Network Event Examples
+### Common Network Event Examples
+
 ```csharp
 // Player events
 public class PlayerJoinedEvent { public string PlayerID; }
@@ -226,10 +235,12 @@ public class LevelEndEvent { public int LevelNumber; public float Time; }
 public class ScoreUpdatedEvent { public string PlayerID; public int NewScore; }
 public class ChatMessageEvent { public string PlayerID; public string Message; }
 ```
-Important Rules
-# DO:
 
-Inherit from NetworkEventListener for automatic cleanup
+# Important Rules
+## DO:
+
+### Inherit from NetworkEventListener for automatic cleanup
+
 ```csharp
 public class MySystem : NetworkEventListener
 
@@ -246,37 +257,44 @@ void Start()
 
 ### NetworkEvents.Publish(new MyEvent { Data = value });
 
-DON’T:
+# DON’T:
 
 ## Forget to inherit NetworkEventListener
 
+```csharp
 // BAD - Will leak!
 public class MySystem : MonoBehaviour
 
 // GOOD
 public class MySystem : NetworkEventListener
-
+```
 
 Publish null events
 
+```csharp
 // BAD
 NetworkEvents.Publish(null);
 
 // GOOD
 NetworkEvents.Publish(new MyEvent());
 
+```
 
-Store events as state
+## Store events as state
 
+```csharp
 // BAD
 private PlayerShotEvent lastShot;
 
 // GOOD
 private int totalShotsFired;
+```
 
-Advanced: Manual Subscription
+# Advanced: Manual Subscription
 
-If you can’t inherit from NetworkEventListener:
+
+## If you can’t inherit from NetworkEventListener:
+
 ```csharp
 public class MySystem : MonoBehaviour
 {
@@ -298,14 +316,21 @@ public class MySystem : MonoBehaviour
     }
 }
 ```
-Debugging
+
+# Debugging
+
+```csharp
 int count = NetworkEvents.GetSubscriberCount<PlayerShotEvent>();
 Debug.Log($"Listeners: {count}");
+```
 
-Quick Reference
-Action	Code
-Define event	public class MyEvent { public int Data; }
-Send event	NetworkEvents.Publish(new MyEvent { Data = 5 });
-Listen (auto cleanup)	Inherit NetworkEventListener, use Listen<MyEvent>(handler)
-Listen (manual)	NetworkEvents.Subscribe<MyEvent>(handler, this)
-Stop listening	Happens automatically with NetworkEventListener
+
+## Quick Reference
+
+| Action | Code |
+|--------|------|
+| Define event | `public class MyEvent { public int Data; }` |
+| Send event | `Events.Publish(new MyEvent { Data = 5 });` |
+| Listen (auto cleanup) | Inherit `EventListener`, use `Listen<MyEvent>(handler)` |
+| Listen (manual) | `Events.Subscribe<MyEvent>(handler, this)` |
+| Stop listening | Happens automatically with `EventListener` |
