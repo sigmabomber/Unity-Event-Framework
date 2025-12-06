@@ -390,11 +390,4 @@ Debug.Log($"Listeners: {count}");
 
 ---
 
-## Summary
 
-Events are like announcements:
-1. Something happens → **Publish** an event
-2. Systems that care → **Listen** for that event
-3. Systems that don't care → Ignore it
-
-That's it! No complex wiring, no tangled references, just clean communication between systems.
