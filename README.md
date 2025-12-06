@@ -369,7 +369,7 @@ The `this` parameter helps prevent memory leaks by tracking ownership.
 
 ## Debugging
 
-Check how many systems are listening:
+### Check how many systems are listening:
 
 ```csharp
 int count = Events.GetSubscriberCount<EnemyDiedEvent>();
