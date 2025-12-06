@@ -295,6 +295,10 @@ namespace Doody.GameEvents
 
         void Update()
         {
+            // Process network events every frame (main thread safety)
+            NetworkEvents.ProcessReceivedEvents();
+
+            // Periodic cleanup
             if (Time.time >= nextCleanupTime)
             {
                 Events.CleanupDeadOwners();
@@ -314,8 +318,12 @@ namespace Doody.GameEvents
 
             // Don't cleanup on application quit to avoid Unity Object access errors
             if (!applicationQuitting)
+            {
                 Events.Clear();
+                NetworkEvents.Shutdown();
+            }
         }
     }
+
 }
 
